@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model ExamResult {
+  id            String   @id @default(cuid())
+  examName      String
+  examType      String   // CBT, OMR
+  url           String?
+  totalQuestions Int
+  attempted     Int
+  correct       Int
+  incorrect     Int
+  skipped       Int
+  totalMarks    Float
+  obtainedMarks Float
+  accuracy      Float
+  percentile    Float?
+  stateRank     Int?
+  categoryRank  Int?
+  category      String?
+  state         String?
+  shift         String?
+  markingScheme String
+  questions     Question[]
+  rankings      Ranking[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([accuracy])
+}
+
+model Question {
+  id              String    @id @default(cuid())
+  examResultId    String
+  questionNumber  Int
+  questionText    String?
+  optionA         String?
+  optionB         String?
+  optionC         String?
+  optionD         String?
+  correctAnswer   String
+  userAnswer      String?
+  isCorrect       Boolean?
+  topic           String
+  difficulty      String    @default("Medium") // Easy, Medium, Hard
+  marks           Float
+  negativeMarks   Float
+  explanation     String?
+  isSillyMistake  Boolean   @default(false)
+  examResult      ExamResult @relation(fields: [examResultId], references: [id], onDelete: Cascade)
+
+  @@index([topic])
+  @@index([difficulty])
+}
+
+model Ranking {
+  id              String    @id @default(cuid())
+  examResultId    String
+  score           Float
+  percentile      Float
+  stateRank       Int
+  categoryRank    Int
+  category        String
+  state           String
+  shift           String?
+  totalParticipants Int
+  examResult      ExamResult @relation(fields: [examResultId], references: [id], onDelete: Cascade)
+
+  @@index([score])
+  @@index([percentile])
+}
+
+model TopicAnalytics {
+  id            String   @id @default(cuid())
+  topic         String
+  totalQuestions Int
+  correct       Int
+  incorrect     Int
+  skipped       Int
+  avgAccuracy   Float
+  updatedAt     DateTime @updatedAt
+
+  @@unique([topic])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  category  String?
+  state     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
