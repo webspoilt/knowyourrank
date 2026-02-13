@@ -7,7 +7,7 @@ export function calculateScore(
   schemeId: string
 ): { totalMarks: number; correct: number; incorrect: number; skipped: number } {
   const scheme = MARKING_SCHEMES.find(s => s.id === schemeId) || MARKING_SCHEMES[0];
-  
+
   let totalMarks = 0;
   let correct = 0;
   let incorrect = 0;
@@ -52,7 +52,7 @@ export function generateTopicBreakdown(questions: Question[]): TopicBreakdown[] 
     }
     const stats = topicMap.get(topic)!;
     stats.total++;
-    
+
     if (!q.userAnswer || q.userAnswer === 'skipped') {
       stats.skipped++;
     } else if (q.isCorrect) {
@@ -143,7 +143,7 @@ export function generateAIInsights(topicBreakdown: TopicBreakdown[]): AIInsight[
 // Parse HTML content for CBT scraping
 export function parseCBTHtml(html: string): Partial<Question>[] {
   const questions: Partial<Question>[] = [];
-  
+
   // Common patterns for exam portals
   const questionPatterns = [
     /Question\s*(\d+)/gi,
@@ -200,7 +200,7 @@ export function parseCBTHtml(html: string): Partial<Question>[] {
     correctPatterns.forEach(pattern => {
       if (pattern.test(line) && currentQuestion) {
         // Mark this as having correct answer indicator
-        currentQuestion.hasCorrectIndicator = true;
+        (currentQuestion as any).hasCorrectIndicator = true;
       }
     });
   });

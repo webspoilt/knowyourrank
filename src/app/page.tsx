@@ -71,7 +71,7 @@ const sampleQuestions: Question[] = Array.from({ length: 100 }, (_, i) => {
   const options = ['A', 'B', 'C', 'D']
   const correctAnswer = options[Math.floor(Math.random() * options.length)]
   const userAnswer = Math.random() > 0.15 ? options[Math.floor(Math.random() * options.length)] : null
-  
+
   return {
     id: `q-${i + 1}`,
     questionNumber: i + 1,
@@ -100,14 +100,14 @@ export default function Home() {
   const [selectedScheme, setSelectedScheme] = useState('ssc-cgl')
   const [customPositive, setCustomPositive] = useState(1)
   const [customNegative, setCustomNegative] = useState(0.25)
-  
+
   // UI state
   const [isLoading, setIsLoading] = useState(false)
   const [showResults, setShowResults] = useState(false)
   const [examResult, setExamResult] = useState<ExamResult | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showExamList, setShowExamList] = useState(false)
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Calculate score based on marking scheme
@@ -115,9 +115,9 @@ export default function Home() {
     const scheme = MARKING_SCHEMES.find(s => s.id === selectedScheme)
     const positive = scheme?.positiveMarks ?? customPositive
     const negative = scheme?.negativeMarks ?? customNegative
-    
+
     let correct = 0, incorrect = 0, skipped = 0, obtainedMarks = 0
-    
+
     sampleQuestions.forEach(q => {
       if (!q.userAnswer) {
         skipped++
@@ -129,11 +129,11 @@ export default function Home() {
         obtainedMarks -= negative
       }
     })
-    
+
     const totalQuestions = sampleQuestions.length
     const attempted = correct + incorrect
     const accuracy = attempted > 0 ? Math.round((correct / attempted) * 10000) / 100 : 0
-    
+
     // Generate topic breakdown
     const topicMap = new Map<string, { total: number; correct: number; incorrect: number; skipped: number }>()
     sampleQuestions.forEach(q => {
@@ -146,18 +146,18 @@ export default function Home() {
       else if (q.isCorrect) stats.correct++
       else stats.incorrect++
     })
-    
+
     const topicBreakdown = Array.from(topicMap.entries()).map(([topic, stats]) => ({
       topic,
       total: stats.total,
       correct: stats.correct,
       incorrect: stats.incorrect,
       skipped: stats.skipped,
-      accuracy: stats.correct + stats.incorrect > 0 
-        ? Math.round((stats.correct / (stats.correct + stats.incorrect)) * 10000) / 100 
+      accuracy: stats.correct + stats.incorrect > 0
+        ? Math.round((stats.correct / (stats.correct + stats.incorrect)) * 10000) / 100
         : 0
     }))
-    
+
     // Identify silly mistakes
     const sillyMistakes = sampleQuestions
       .filter(q => q.difficulty === 'Easy' && q.isCorrect === false)
@@ -168,7 +168,7 @@ export default function Home() {
         userAnswer: q.userAnswer || 'Not attempted',
         reason: `This was an easy question in ${q.topic}. Review the basics.`
       }))
-    
+
     const result: ExamResult = {
       id: Date.now().toString(),
       examName: 'Score Analysis',
@@ -187,7 +187,7 @@ export default function Home() {
       sillyMistakes,
       createdAt: new Date(),
     }
-    
+
     return result
   }, [selectedScheme, customPositive, customNegative, answerKeyUrl])
 
@@ -201,13 +201,13 @@ export default function Home() {
       alert('Please upload a file')
       return
     }
-    
+
     setIsLoading(true)
-    
+
     try {
       // Simulate processing
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       const result = calculateResult()
       setExamResult(result)
       setShowResults(true)
@@ -265,7 +265,7 @@ export default function Home() {
             </span>
             <span className="text-xs text-gray-700 ml-1 hidden sm:inline">.in</span>
           </a>
-          
+
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-gray-800 hidden md:inline">
               Score Calculator & Rank Predictor
@@ -319,7 +319,7 @@ export default function Home() {
                   {showExamList ? 'Hide' : 'Show'} All Exams
                   <ChevronDown className={`w-4 h-4 transition-transform ${showExamList ? 'rotate-180' : ''}`} />
                 </button>
-                
+
                 {showExamList && (
                   <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {popularExams.slice(4).map((exam, i) => (
@@ -355,22 +355,20 @@ export default function Home() {
                     <div className="flex border-b border-gray-200 mb-3">
                       <button
                         onClick={() => setActiveTab('url')}
-                        className={`flex-1 py-2 text-sm font-medium border-b-2 transition-colors ${
-                          activeTab === 'url'
+                        className={`flex-1 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'url'
                             ? 'border-indigo-600 text-indigo-600'
                             : 'border-transparent text-gray-500 hover:text-gray-700'
-                        }`}
+                          }`}
                       >
                         <Link2 className="w-4 h-4 inline mr-1" />
                         By URL
                       </button>
                       <button
                         onClick={() => setActiveTab('file')}
-                        className={`flex-1 py-2 text-sm font-medium border-b-2 transition-colors ${
-                          activeTab === 'file'
+                        className={`flex-1 py-2 text-sm font-medium border-b-2 transition-colors ${activeTab === 'file'
                             ? 'border-indigo-600 text-indigo-600'
                             : 'border-transparent text-gray-500 hover:text-gray-700'
-                        }`}
+                          }`}
                       >
                         <Upload className="w-4 h-4 inline mr-1" />
                         By File
@@ -672,8 +670,8 @@ export default function Home() {
                     </div>
                     <div className="text-gray-600">Total Marks</div>
                     <div className="mt-4">
-                      <Progress 
-                        value={(examResult?.obtainedMarks || 0) / (examResult?.totalMarks || 1) * 100} 
+                      <Progress
+                        value={(examResult?.obtainedMarks || 0) / (examResult?.totalMarks || 1) * 100}
                         className="h-3"
                       />
                     </div>
@@ -803,13 +801,13 @@ export default function Home() {
             <div className="md:col-span-2">
               <h4 className="font-semibold mb-2">About KnowYourRank.in</h4>
               <p className="text-white/80 text-sm">
-                India's most trusted exam score calculator and rank predictor. 
+                India's most trusted exam score calculator and rank predictor.
                 Get instant analysis of your CBT exam performance with AI-powered insights.
               </p>
             </div>
           </div>
           <div className="border-t border-white/20 mt-4 pt-4 text-center text-white/60 text-sm">
-            © 2024 KnowYourRank.in — All Rights Reserved
+            © 2025 KnowYourRank.in — All Rights Reserved
           </div>
         </div>
       </footer>
