@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+
 
 interface ReportRequest {
   examResultId: string
@@ -36,16 +35,8 @@ export async function POST(request: NextRequest) {
     // Generate PDF content (HTML for conversion)
     const reportHtml = generateReportHtml(examResult, insights)
 
-    // Use project-relative download directory
-    const downloadDir = path.join(process.cwd(), 'download')
-    if (!fs.existsSync(downloadDir)) {
-      fs.mkdirSync(downloadDir, { recursive: true })
-    }
-
-    // Save HTML report
+    // No need to save to disk on Vercel - return content directly
     const reportId = Date.now().toString()
-    const htmlPath = path.join(downloadDir, `exam-report-${reportId}.html`)
-    fs.writeFileSync(htmlPath, reportHtml)
 
     // Generate next focus recommendations
     const nextFocus = insights
@@ -55,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      downloadUrl: `/api/download-report?file=exam-report-${reportId}.html`,
+      reportHtml,
       reportId,
       insights,
       nextFocus,
